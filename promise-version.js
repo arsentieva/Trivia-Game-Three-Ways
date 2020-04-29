@@ -1,4 +1,4 @@
-export function getClue(cb) {
+export function getClue() {
   const url = "https://jservice.xyz/api/random-clue";
   return fetch(url).then((response) => {
     if (!response.ok) {
