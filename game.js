@@ -16,7 +16,8 @@ const catTitleDiv = document.getElementById("category-title");
 const invalidCountDiv = document.getElementById("invalid-count");
 const scoreDiv = document.getElementById("score");
 
-window.addEventListener("DOMContentLoaded", (event) => {
+window.addEventListener("DOMContentLoaded", () => {
+  restoreFromLocal();
   checkResponseBtn.addEventListener("click", () => {
     let enteredResponse = playerResponse.value.trim();
 
@@ -61,6 +62,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 });
 
 function setUIFromClue(clue) {
+  debugger;
   questionDiv.innerHTML = clue.question;
   answerDiv.innerHTML = clue.answer;
   valueDiv.innerHTML = clue.value;
@@ -70,10 +72,31 @@ function setUIFromClue(clue) {
   } else {
     invalidCountDiv.innerHTML = "valid";
   }
+
+  localStorage.setItem("id", clue.id);
 }
 
 function reset() {
   answerDiv.classList.add("is-hidden");
   checkResponseBtn.classList.remove("is-hidden");
   playerResponse.value = "";
+}
+async function getStorageClue(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(response.status);
+  } else {
+    return await response.json();
+  }
+}
+
+async function restoreFromLocal() {
+  let storageValue = localStorage.getItem("id");
+  if (storageValue !== null) {
+    let clue = await getStorageClue(url);
+    localStorage.setItem("clue", JSON.stringify(clue));
+    let dataFromStorage = JSON.parse(localStorage.getItem("clue"));
+    setUIFromClue(dataFromStorage);
+    reset();
+  }
 }
